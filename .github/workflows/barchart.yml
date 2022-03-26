@@ -2,10 +2,10 @@ name: barchart.com API Ruby Client
 on:
   pull_request:
     paths:
-      - 'barchart/**'
+      - '**'
   push:
     paths:
-      - 'barchart/**'
+      - '**'
 
 defaults:
   run:
