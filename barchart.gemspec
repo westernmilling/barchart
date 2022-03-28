@@ -23,13 +23,13 @@ Gem::Specification.new do |spec|
   spec.bindir = 'bin'
   spec.require_paths = ['lib']
 
-  spec.add_runtime_dependency 'activesupport', '~> 6'
+  spec.add_runtime_dependency 'activesupport', '~> 4'
   spec.add_runtime_dependency 'httparty', '0.17.3'
   spec.add_runtime_dependency 'json-api-vanilla', '1.0.2'
 
   spec.add_development_dependency 'bundler', '~> 1.16'
-  spec.add_development_dependency 'factory_bot', '5.1.1'
-  spec.add_development_dependency 'faker', '2.10.1'
+  spec.add_development_dependency 'factory_bot', '5.2'
+  spec.add_development_dependency 'faker', '2.2.1'
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'rspec_junit_formatter', '0.4.1'
