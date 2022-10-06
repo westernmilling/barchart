@@ -66,6 +66,7 @@ module Barchart
     end
 
     alias adjusted_last_price adjusted_price
+    alias adjusted_net_change adjusted_price
 
     protected
 
