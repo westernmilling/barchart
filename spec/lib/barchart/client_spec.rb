@@ -195,7 +195,172 @@ RSpec.describe Barchart::Client do
     end
   end
 
-  # TODO: Add test for #futures_prices
+  describe '#futures_prices' do
+    context 'when no api key is provided' do
+      it 'fails with a 401' do
+        # Arrange
+        api_key = ''
+        base_url = 'http://localhost:8080'
+        client = described_class.new(
+          api_key: api_key,
+          base_url: base_url,
+          logger: Logger.new(IO::NULL)
+        )
+        uri = URI.parse(base_url)
+
+        params = {
+          apikey: api_key,
+          symbols: 'ZCZ22'
+        }
+        response = {
+          body: 'API key is missing or not valid.',
+          headers: {
+            'Accept' => 'text/html',
+            'Content-Type' => 'text/html'
+          },
+          status: 401
+        }
+        stub_request(
+          :get,
+          "#{base_url}/getQuote.json?#{params.to_query}"
+        )
+          .with(
+            headers: {
+              'Accept' => 'application/json',
+              'Content-Type' => 'application/json',
+              'Host' => uri.host,
+              'User-Agent' => 'barchart.rb'
+            }
+          )
+          .to_return(response)
+        # Act and Assert
+        expect { client.futures_prices(symbols: 'ZCZ22') }
+          .to raise_error(
+            Barchart::Unauthorized, 'API key is missing or not valid.'
+          )
+      end
+    end
+
+    context 'when no symbols are provided' do
+      it 'fails with a 400' do
+        # Arrange
+        api_key = SecureRandom.uuid
+        base_url = 'http://localhost:8080'
+        client = described_class.new(
+          api_key: api_key,
+          base_url: base_url,
+          logger: Logger.new(IO::NULL)
+        )
+        uri = URI.parse(base_url)
+
+        params = {
+          apikey: api_key
+        }
+        response = {
+          body: 'Field \'symbols\' is required.',
+          headers: {
+            'Accept' => 'text/html',
+            'Content-Type' => 'text/html'
+          },
+          status: 400
+        }
+        stub_request(
+          :get,
+          "#{base_url}/getQuote.json?#{params.to_query}"
+        )
+          .with(
+            headers: {
+              'Accept' => 'application/json',
+              'Content-Type' => 'application/json',
+              'Host' => uri.host,
+              'User-Agent' => 'barchart.rb'
+            }
+          )
+          .to_return(response)
+        # Act and Assert
+        expect { client.futures_prices({}) }
+          .to raise_error(
+            Barchart::BadRequest,
+            'Field \'symbols\' is required.'
+          )
+      end
+    end
+
+    it 'returns futures prices' do
+      # Arrange
+      api_key = SecureRandom.uuid
+      base_url = 'http://localhost:8080'
+      client = described_class.new(
+        api_key: api_key,
+        base_url: base_url,
+        logger: Logger.new(IO::NULL)
+      )
+      uri = URI.parse(base_url)
+
+      futures_prices_data = build_list(:futures_price, 2)
+      params = {
+        apikey: api_key,
+        symbols: 'ZCK20'
+      }
+      response = {
+        body: {
+          status: {
+            code: 200,
+            message: 'Success.'
+          },
+          results: futures_prices_data
+        }.to_json,
+        headers: {
+          'Accept' => 'application/json',
+          'Content-Type' => 'application/json'
+        },
+        status: 200
+      }
+      stub_request(
+        :get,
+        "#{base_url}/getQuote.json?#{params.to_query}"
+      )
+        .with(
+          headers: {
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'Host' => uri.host,
+            'User-Agent' => 'barchart.rb'
+          }
+        )
+        .to_return(response)
+      # Act
+      result = client.futures_prices(params.slice(:symbols))
+      # Assert
+      expect(result).to contain_exactly(
+        *(
+          futures_prices_data.map do |data|
+            have_attributes(
+              close: data['close'],
+              day_code: data['dayCode'],
+              dollar_volume: data['dollarVolume'],
+              flag: data['flag'],
+              high_price: data['highPrice'],
+              last_price: data['lastPrice'],
+              low_price: data['lowPrice'],
+              mode: data['mode'],
+              name: data['name'],
+              net_change: data['netChange'],
+              num_trades: data['numTrades'],
+              open_price: data['openPrice'],
+              percent_change: data['percentChange'],
+              previous_volume: data['previousVolume'],
+              server_timestamp: data['serverTimestamp'],
+              symbol: data['symbol'],
+              trade_timestamp: data['tradeTimestamp'],
+              unit_code: data['unitCode'],
+              volume: data['volume']
+            )
+          end
+        )
+      )
+    end
+  end
 
   describe '#special_options' do
     context 'when a contract filter is provided' do

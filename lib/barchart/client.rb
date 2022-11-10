@@ -31,6 +31,7 @@ module Barchart
     class << self
       attr_accessor :api_key,
                     :base_url,
+                    :default_price_conversion_class_name,
                     :logger,
                     :price_conversion_class_names,
                     :proxy_url,
