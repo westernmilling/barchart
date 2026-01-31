@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
   spec.bindir = 'bin'
   spec.require_paths = ['lib']
 
-  spec.add_runtime_dependency 'activesupport', '~> 4'
+  spec.add_runtime_dependency 'activesupport'
   spec.add_runtime_dependency 'httparty', '0.17.3'
   spec.add_runtime_dependency 'json-api-vanilla', '1.0.2'
 
