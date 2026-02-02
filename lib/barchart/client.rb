@@ -2,6 +2,7 @@
 
 require 'barchart'
 require 'httparty'
+require 'logger'
 require 'active_support/core_ext'
 
 module Barchart
